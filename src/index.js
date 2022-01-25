@@ -6,12 +6,8 @@ const app = express();
 app.use(express.json())
 app.listen(3333)
 
-
 const customers = []
 
-app.get("/", (request, response) => {
-
-})
 
 app.post("/customers", (request, response) => {
   const {name, cpf} = request.body;
@@ -32,3 +28,22 @@ app.post("/customers", (request, response) => {
 
   return response.status(201).send(customers)
 })
+
+app.get("/statement", (request, response) => {
+  const {cpf} = request.headers;
+
+  const customer = customers.find((customer) => customer.cpf === cpf)
+
+  if(!customer){
+    return response.status(400).json({message: "Customer not found!"})
+  }
+
+  if(customer.statement.length === 0 ){
+    return response.json({message: "No one statement found!"})
+  }
+
+  console.log(customer.statement)
+
+  return response.json(customer.statement)
+})
+
