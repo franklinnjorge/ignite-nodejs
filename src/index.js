@@ -8,8 +8,20 @@ app.listen(3333)
 
 const customers = []
 
+function verifyIfExistsAccountCPF(request, response, next){
+  const {cpf} = request.headers;
+  const customer = customers.find((customer) => customer.cpf === cpf)
+   
+  if(!customer){
+    return response.status(400).json({message: "Customer not found!"})
+  }
+  
+  request.customer = customer;
 
-app.post("/customers", (request, response) => {
+  return next();
+}
+
+app.post("/customers",  (request, response) => {
   const {name, cpf} = request.body;
 
   const customerAlreadyExist = customers.some(
@@ -29,14 +41,10 @@ app.post("/customers", (request, response) => {
   return response.status(201).send(customers)
 })
 
-app.get("/statement", (request, response) => {
-  const {cpf} = request.headers;
-
-  const customer = customers.find((customer) => customer.cpf === cpf)
-
-  if(!customer){
-    return response.status(400).json({message: "Customer not found!"})
-  }
+// everything below this line, have a middleware
+//app.use(verifyIfExistsAccountCPF)
+app.get("/statement", verifyIfExistsAccountCPF, (request, response) => {
+ const {customer} = request;
 
   if(customer.statement.length === 0 ){
     return response.json({message: "No one statement was found!"})
