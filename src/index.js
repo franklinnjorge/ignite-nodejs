@@ -39,10 +39,8 @@ app.get("/statement", (request, response) => {
   }
 
   if(customer.statement.length === 0 ){
-    return response.json({message: "No one statement found!"})
+    return response.json({message: "No one statement was found!"})
   }
-
-  console.log(customer.statement)
 
   return response.json(customer.statement)
 })
